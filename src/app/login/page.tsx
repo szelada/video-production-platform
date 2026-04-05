@@ -14,21 +14,56 @@ export default function LoginPage() {
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
+        console.log('--- [DIAGNOSTIC] LOGIN START ---', { email, timestamp: new Date().toISOString() });
         setLoading(true);
         setError(null);
 
         try {
-            const { error } = await supabase.auth.signInWithPassword({
+            console.log('[DIAGNOSTIC] Sending signInWithPassword request to Supabase...');
+            const { error, data } = await supabase.auth.signInWithPassword({
                 email,
                 password,
             });
 
-            if (error) throw error;
+            if (error) {
+                console.error('[DIAGNOSTIC] Supabase Auth Error:', { 
+                    message: error.message, 
+                    status: error.status,
+                    name: error.name
+                });
+                throw error;
+            }
 
-            router.push('/workspace');
+            console.log('[DIAGNOSTIC] Login Successful:', { 
+                userId: data?.user?.id,
+                sessionActive: !!data?.session,
+                expiresAt: data?.session?.expires_at
+            });
+
+            // Sync session with the router cache
+            console.log('[DIAGNOSTIC] Refreshing router...');
+            router.refresh();
+            
+            // Wait a beat for session cookie to propagate
+            await new Promise(r => setTimeout(r, 500));
+
+            console.log('[DIAGNOSTIC] Redirecting to /projects...');
+            router.push('/projects');
+            
+            // Force location change if router.push fails to respond in production
+            setTimeout(() => {
+                const currentPath = window.location.pathname;
+                if (currentPath === '/login') {
+                  console.log('[DIAGNOSTIC] Fallback: router.push did not change path. Executing window.location.href...');
+                  window.location.href = '/projects';
+                }
+            }, 3000);
+
         } catch (err: any) {
+            console.error('[DIAGNOSTIC] Login Catch Block:', err);
             setError(err.message || 'Error al iniciar sesión. Verifica tus credenciales.');
         } finally {
+            console.log('--- [DIAGNOSTIC] LOGIN FINALLY ---');
             setLoading(false);
         }
     };

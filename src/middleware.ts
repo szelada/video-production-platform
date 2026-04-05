@@ -1,11 +1,12 @@
-import { type NextRequest } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 import { createClient } from '@/utils/supabase/middleware';
 
 export async function middleware(request: NextRequest) {
   const { supabase, response } = createClient(request);
 
   // Refresh session if expired - required for Server Components
-  const { data: { session } } = await supabase.auth.getSession();
+  // Use getUser() for better security and to ensure the session is valid
+  const { data: { user } } = await supabase.auth.getUser();
 
   // Define protected routes
   const isProtectedRoute = 
@@ -16,20 +17,51 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith('/workspace') ||
     request.nextUrl.pathname === '/';
 
-  // If no session and trying to access a protected route, redirect to login
-  if (!session && isProtectedRoute) {
+  /* 
+  // TEMPORARILY DISABLED FOR DEBUGGING LOGIN HANG
+  // If no user and trying to access a protected route, redirect to login
+  if (!user && isProtectedRoute) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
-    // If the user was trying to access a specific page, we can optionally redirect them back after login
-    // url.searchParams.set('next', request.nextUrl.pathname);
-    return Response.redirect(url);
+    
+    // CRITICAL: We MUST create a new redirect response but carry over the cookies
+    // from the Supabase client's response object (which contains the session sync logic)
+    const redirectResponse = NextResponse.redirect(url);
+    
+    // Copy cookies from Supabase response to the redirect response
+    response.cookies.getAll().forEach(cookie => {
+      redirectResponse.cookies.set(cookie.name, cookie.value, {
+        domain: cookie.domain,
+        maxAge: cookie.maxAge,
+        path: cookie.path,
+        sameSite: cookie.sameSite,
+        secure: cookie.secure,
+      });
+    });
+    
+    return redirectResponse;
   }
+  */
 
-  // If there's a session and user is on login page, redirect to projects
-  if (session && request.nextUrl.pathname === '/login') {
+  // If there's a user and on login page, redirect to projects
+  if (user && request.nextUrl.pathname === '/login') {
     const url = request.nextUrl.clone();
     url.pathname = '/projects';
-    return Response.redirect(url);
+    
+    const redirectResponse = NextResponse.redirect(url);
+    
+    // Copy cookies from Supabase response to the redirect response
+    response.cookies.getAll().forEach(cookie => {
+      redirectResponse.cookies.set(cookie.name, cookie.value, {
+        domain: cookie.domain,
+        maxAge: cookie.maxAge,
+        path: cookie.path,
+        sameSite: cookie.sameSite,
+        secure: cookie.secure,
+      });
+    });
+    
+    return redirectResponse;
   }
 
   return response;
