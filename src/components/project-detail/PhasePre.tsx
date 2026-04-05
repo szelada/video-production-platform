@@ -1,12 +1,13 @@
 'use client';
 
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { QuickQuote } from './QuickQuote';
 import { 
   Rocket, FileText, Clock, CheckSquare, MapPin, UserPlus, Plus, 
   ChevronRight, Check, Trash2, Sparkles, FolderOpen, ImageIcon, 
   Link2, ListChecks, Phone, Maximize2, Mail, Calendar, Camera, Package,
-  Loader2, X, MoreVertical, Users, Download
+  Loader2, X, MoreVertical, Users, Download, Calculator
 } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 
@@ -47,6 +48,9 @@ interface PhasePreProps {
   setIsCastingTerminalOpen?: (open: boolean) => void;
   setIsLocationTerminalOpen?: (open: boolean) => void;
   setIsArtTerminalOpen?: (open: boolean) => void;
+  project: any;
+  budgetSummary: any[];
+  onUpdate: () => void;
 }
 
 export const PhasePre: React.FC<PhasePreProps> = ({
@@ -84,14 +88,17 @@ export const PhasePre: React.FC<PhasePreProps> = ({
   setIsCastingTerminalOpen,
   setIsLocationTerminalOpen,
   setIsArtTerminalOpen,
-  onAddBreakdownItem
+  onAddBreakdownItem,
+  project,
+  budgetSummary,
+  onUpdate
 }) => {
-  const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
-  const [selectedEditItem, setSelectedEditItem] = React.useState<any>(null);
-  const [editForm, setEditForm] = React.useState<any>({});
-  const [activeMenuId, setActiveMenuId] = React.useState<string | null>(null);
-  const [isAddBreakdownModalOpen, setIsAddBreakdownModalOpen] = React.useState(false);
-  const [newBreakdownForm, setNewBreakdownForm] = React.useState<any>({
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedEditItem, setSelectedEditItem] = useState<any>(null);
+  const [editForm, setEditForm] = useState<any>({});
+  const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
+  const [isAddBreakdownModalOpen, setIsAddBreakdownModalOpen] = useState(false);
+  const [newBreakdownForm, setNewBreakdownForm] = useState<any>({
     category: 'utileria',
     name: '',
     description: '',
@@ -1036,6 +1043,15 @@ export const PhasePre: React.FC<PhasePreProps> = ({
             </div>
           </div>
         </motion.div>
+      )}
+
+      {activeSubTab === 'cotizacion' && (
+        <QuickQuote 
+          projectId={project.id}
+          project={project}
+          budgetSummary={budgetSummary}
+          onUpdate={onUpdate}
+        />
       )}
 
       {/* Edit Detail Modal */}

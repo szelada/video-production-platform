@@ -16,6 +16,7 @@ import {
   Users,
   CheckSquare,
   MapPin,
+  Calculator,
   Package,
   Plus,
   MoreVertical,
@@ -2228,6 +2229,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
           {activePhase === 'pre' && [
             { id: 'resumen', label: 'Resumen', icon: LayoutDashboard },
             { id: 'base', label: 'Material Base', icon: FolderOpen },
+            { id: 'cotizacion', label: 'Cotización', icon: Calculator },
             { id: 'desglose', label: 'Desglose', icon: ListChecks },
             { id: 'scouting', label: 'Scouting', icon: Package },
             { id: 'biblia', label: 'Biblia del Proyecto', icon: FileText },
@@ -2348,6 +2350,9 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                   setIsCastingTerminalOpen={setIsCastingTerminalOpen}
                   setIsLocationTerminalOpen={setIsLocationTerminalOpen}
                   setIsArtTerminalOpen={setIsArtTerminalOpen}
+                  project={project}
+                  budgetSummary={budgetSummary}
+                  onUpdate={() => fetchBudgetData(id)}
                 />
               )}
               {/* PHASE: PRE-PRODUCCIÓN - CREDENCIALES (Link to Config) */}
