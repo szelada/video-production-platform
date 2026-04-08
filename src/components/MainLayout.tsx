@@ -14,12 +14,12 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] flex">
+    <div className="min-h-screen bg-background flex text-foreground">
       {/* Configuration for Desktop Navigation */}
       <Sidebar />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col lg:pl-[100px] xl:pl-[280px] transition-all duration-500 pb-20 lg:pb-0 min-w-0">
+      <div className="flex-1 flex flex-col lg:pl-[100px] xl:pl-[280px] transition-all duration-500 pb-20 lg:pb-0 min-w-0 bg-background">
         <TopBar />
 
         <main className="flex-1 w-full relative">

@@ -28,29 +28,29 @@
 }
 
 :root {
-  --background: #F4F4F5;
-  /* zinc-100 */
-  --foreground: #09090B;
-  /* zinc-950 */
-  --card: #FFFFFF;
-  --card-foreground: #09090B;
-  --popover: #FFFFFF;
-  --popover-foreground: #09090B;
-  --primary: #F97316;
-  /* orange-500 */
+  --background: #09090B;
+  /* Dark background for Mood 2 */
+  --foreground: #FAFAFA;
+  --card: rgba(255, 255, 255, 0.03);
+  --card-foreground: #FAFAFA;
+  --popover: #09090B;
+  --popover-foreground: #FAFAFA;
+  --primary: #6366f1;
+  /* Indigo for Action */
   --primary-foreground: #FFFFFF;
-  --secondary: #F4F4F5;
-  --secondary-foreground: #27272A;
-  --muted: #F4F4F5;
-  --muted-foreground: #71717A;
-  --accent: #F4F4F5;
-  --accent-foreground: #09090B;
+  --secondary: #27272A;
+  --secondary-foreground: #FAFAFA;
+  --muted: #27272A;
+  --muted-foreground: #A1A1AA;
+  --accent: #27272A;
+  --accent-foreground: #FAFAFA;
   --destructive: #EF4444;
   --destructive-foreground: #FAFAFA;
-  --border: #E4E4E7;
-  --input: #E4E4E7;
-  --ring: #F97316;
-  --radius: 1.5rem;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.05);
+  --ring: #6366f1;
+  --radius: 2rem;
+  /* Mood 2 High Radius */
 }
 
 body {
@@ -59,14 +59,19 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.1) 0px, transparent 50%);
+  min-height: 100vh;
 }
 
 /* Card system utility */
 .ui-card,
 .soft-card {
   background: var(--card);
-  border: none;
+  border: 1px solid var(--border);
   border-radius: var(--radius);
+  backdrop-filter: blur(12px);
 }
 
 .ui-card-elevated {
@@ -74,6 +79,44 @@ body {
   border: 1px solid var(--border);
   box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
   border-radius: calc(var(--radius) * 1.2);
+  backdrop-filter: blur(20px);
+}
+
+/* --- MOOD 2: VISIONARY APPLE BENTO (FROSTED) --- */
+.glass-bento {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(32px) saturate(180%);
+  -webkit-backdrop-filter: blur(32px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+  border-radius: 2.5rem;
+}
+
+.glass-bento-dark {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(40px) saturate(150%);
+  -webkit-backdrop-filter: blur(40px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 2.5rem;
+}
+
+.bento-grid-layout {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: minmax(160px, auto);
+  gap: 1.5rem;
+}
+
+@media (max-width: 1280px) {
+  .bento-grid-layout {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .bento-grid-layout {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Scrollbar styling */
@@ -86,10 +129,10 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--muted-foreground);
+  background: rgba(255, 255, 255, 0.2);
 }

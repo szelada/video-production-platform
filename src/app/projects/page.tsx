@@ -123,39 +123,39 @@ export default function ProjectsPage() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
-      className="space-y-6 p-8 lg:p-12 min-h-[calc(100vh-theme(spacing.24))] bg-[#F8F9FA]"
+      className="space-y-8 p-8 lg:p-14 min-h-screen bg-transparent"
     >
       {/* Header Area */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
         <div>
-          <h1 className="text-5xl font-black tracking-tightest text-zinc-900 leading-none mb-4">Proyectos</h1>
-          <p className="text-sm font-black text-zinc-400 uppercase tracking-widest leading-none">Gestiona y supervisa tus rodajes activos</p>
+          <h1 className="text-6xl font-black tracking-tightest text-white leading-none mb-6 italic">Proyectos</h1>
+          <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em] leading-none">Gestiona y supervisa tus rodajes activos</p>
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-3 bg-zinc-900 text-white px-8 py-4 rounded-[2rem] font-black hover:bg-zinc-800 transition-all shadow-2xl hover:scale-105 active:scale-95 uppercase tracking-widest text-[10px]"
+          className="flex items-center gap-4 bg-white text-black px-10 py-5 rounded-[2.5rem] font-black hover:scale-105 active:scale-95 transition-all shadow-2xl uppercase tracking-[0.2em] text-[10px]"
         >
-          <Plus size={18} strokeWidth={3} /> Nuevo Proyecto
+          <Plus size={20} strokeWidth={4} /> Nuevo Proyecto
         </button>
       </div>
 
       {/* Main Content Area */}
       <div className="space-y-10">
         {/* Unified Search & Filter Header */}
-        <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-white/50 backdrop-blur-xl p-4 rounded-[2.5rem] border border-gray-100 shadow-sm">
-          <div className="flex items-center gap-4 bg-white border border-gray-100 rounded-[2rem] px-6 py-4 flex-1 w-full shadow-sm group focus-within:ring-4 focus-within:ring-zinc-100 transition-all">
-            <Search size={16} className="text-zinc-300 group-focus-within:text-zinc-900 transition-colors" />
+        <div className="flex flex-col sm:flex-row gap-6 items-center justify-between glass-bento p-5 border border-white/5 shadow-2xl">
+          <div className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-[2.5rem] px-8 py-4 flex-1 w-full shadow-inner group focus-within:ring-4 focus-within:ring-indigo-500/10 transition-all">
+            <Search size={16} className="text-white/20 group-focus-within:text-indigo-400 transition-colors" />
             <input
               type="text"
               placeholder="Buscar por nombre, cliente o código..."
-              className="bg-transparent border-none outline-none text-[11px] font-bold w-full placeholder:text-zinc-300 text-zinc-900"
+              className="bg-transparent border-none outline-none text-[11px] font-bold w-full placeholder:text-white/20 text-white"
             />
           </div>
-          <div className="flex items-center gap-3 w-full sm:w-auto">
-            <button className="flex items-center justify-center gap-3 px-8 py-4 rounded-[2rem] bg-white border border-gray-100 text-zinc-400 font-black hover:text-zinc-900 transition-all w-full sm:w-auto uppercase tracking-widest text-[10px] shadow-sm">
+          <div className="flex items-center gap-4 w-full sm:w-auto">
+            <button className="flex items-center justify-center gap-3 px-10 py-4 rounded-[2.5rem] bg-white/5 border border-white/10 text-white/40 font-black hover:text-white transition-all w-full sm:w-auto uppercase tracking-widest text-[10px] shadow-sm backdrop-blur-md">
               <Filter size={14} strokeWidth={3} /> Estado
             </button>
-            <button className="flex items-center justify-center gap-3 px-8 py-4 rounded-[2rem] bg-zinc-900 text-white font-black transition-all shadow-xl w-full sm:w-auto uppercase tracking-widest text-[10px] hover:scale-105 active:scale-95">
+            <button className="flex items-center justify-center gap-3 px-10 py-4 rounded-[2.5rem] bg-indigo-500 text-white font-black transition-all shadow-2xl w-full sm:w-auto uppercase tracking-widest text-[10px] hover:scale-105 active:scale-95 shadow-indigo-500/20">
               Recientes
             </button>
           </div>
@@ -193,17 +193,17 @@ export default function ProjectsPage() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: i * 0.05 }}
                 whileHover={{ y: -6, scale: 1.01 }}
-                className="bg-white group flex flex-col rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-2xl hover:shadow-zinc-200/50 transition-all duration-500 overflow-hidden"
+                className="glass-bento group flex flex-col border border-white/5 shadow-2xl hover:border-white/10 transition-all duration-500 overflow-hidden"
               >
                 <div className="p-8 lg:p-10 flex-1 space-y-8">
                   <div className="flex items-start justify-between">
                     <div className="space-y-3 flex-1">
                       <div className="flex items-center gap-2">
-                         <span className="text-[9px] font-black text-zinc-300 tracking-[0.2em] uppercase">{project.code}</span>
-                         <div className="h-px flex-1 bg-zinc-50" />
+                         <span className="text-[10px] font-black text-white/20 tracking-[0.3em] uppercase">{project.code}</span>
+                         <div className="h-px flex-1 bg-white/5" />
                       </div>
                       <Link href={`/projects/${project.id}`}>
-                        <h3 className="text-2xl font-black text-zinc-900 group-hover:text-indigo-600 transition-colors leading-[1.1] tracking-tightest">{project.name}</h3>
+                        <h3 className="text-3xl font-black text-white group-hover:text-indigo-400 transition-colors leading-[1.1] tracking-tightest uppercase italic">{project.name}</h3>
                       </Link>
                     </div>
                     <button
@@ -212,57 +212,57 @@ export default function ProjectsPage() {
                         e.stopPropagation();
                         alert(`Opciones para: ${project.name}`);
                       }}
-                      className="p-3 bg-zinc-50 rounded-2xl text-zinc-300 hover:text-zinc-900 hover:bg-zinc-100 transition-all shadow-inner"
+                      className="p-4 bg-white/5 rounded-2xl text-white/20 hover:text-white hover:bg-white/10 transition-all shadow-inner border border-white/5"
                     >
                       <MoreVertical size={18} />
                     </button>
                   </div>
 
-                  <div className="flex flex-wrap gap-2">
-                    <span className="text-[9px] font-black px-4 py-2 rounded-xl bg-zinc-50 text-zinc-400 uppercase tracking-widest border border-gray-100/50">
+                  <div className="flex flex-wrap gap-3">
+                    <span className="text-[9px] font-black px-5 py-2.5 rounded-xl bg-white/5 text-white/30 uppercase tracking-widest border border-white/5">
                       {project.project_type}
                     </span>
-                    <span className={`text-[9px] font-black px-4 py-2 rounded-xl uppercase tracking-widest ${project.status === 'active' ? 'bg-indigo-50 text-indigo-600 border border-indigo-100' :
-                      project.status === 'draft' ? 'bg-orange-50 text-orange-600 border border-orange-100' :
-                        'bg-zinc-50 text-zinc-300 border border-gray-100'
+                    <span className={`text-[9px] font-black px-5 py-2.5 rounded-xl uppercase tracking-widest ${project.status === 'active' ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' :
+                      project.status === 'draft' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' :
+                        'bg-white/5 text-white/20 border border-white/5'
                       }`}>
                       {project.status === 'active' ? 'EN RODAJE' : project.status === 'draft' ? 'PRE-PRO' : 'COMPLETADO'}
                     </span>
                   </div>
 
-                  <div className="space-y-4 pt-4 border-t border-gray-50">
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-2xl bg-[#F8F9FA] flex items-center justify-center border border-gray-100 shadow-inner">
-                        <Building size={16} className="text-zinc-400" />
+                  <div className="space-y-5 pt-6 border-t border-white/5">
+                    <div className="flex items-center gap-5">
+                      <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 shadow-inner">
+                        <Building size={20} className="text-white/20" />
                       </div>
                       <div className="flex flex-col">
-                         <span className="text-[9px] font-black text-zinc-300 uppercase tracking-widest">Cliente</span>
-                         <span className="text-xs font-bold text-zinc-700">{project.client_name}</span>
+                         <span className="text-[9px] font-black text-white/20 uppercase tracking-widest mb-1">Cliente</span>
+                         <span className="text-xs font-bold text-white/80">{project.client_name}</span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-2xl bg-[#F8F9FA] flex items-center justify-center border border-gray-100 shadow-inner">
-                        <Calendar size={16} className="text-zinc-400" />
+                    <div className="flex items-center gap-5">
+                      <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 shadow-inner">
+                        <Calendar size={20} className="text-white/20" />
                       </div>
                       <div className="flex flex-col">
-                         <span className="text-[9px] font-black text-zinc-300 uppercase tracking-widest">Cronograma</span>
-                         <span className="text-xs font-bold text-zinc-700 tracking-tight">{project.start_date || 'TBD'} — {project.end_date || 'TBD'}</span>
+                         <span className="text-[9px] font-black text-white/20 uppercase tracking-widest mb-1">Cronograma</span>
+                         <span className="text-xs font-bold text-white/60 tracking-tight">{project.start_date || 'TBD'} — {project.end_date || 'TBD'}</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="px-10 py-6 bg-[#F8F9FA]/50 border-t border-gray-50 flex items-center justify-between group-hover:bg-zinc-950 transition-colors duration-500">
+                <div className="px-10 py-8 bg-white/5 border-t border-white/5 flex items-center justify-between group-hover:bg-indigo-500 transition-colors duration-500">
                   <div className="flex -space-x-3">
                     {[1, 2, 3].map(i => (
-                      <div key={i} className="w-9 h-9 rounded-xl bg-white border-4 border-[#F8F9FA] group-hover:border-zinc-900 group-hover:bg-zinc-800 flex items-center justify-center text-[10px] font-black text-zinc-200 transition-all">
+                      <div key={i} className="w-10 h-10 rounded-xl bg-zinc-900 border-4 border-black/20 flex items-center justify-center text-[10px] font-black text-white/20 transition-all">
                         ?
                       </div>
                     ))}
                   </div>
                   <Link
                     href={`/projects/${project.id}`}
-                    className="text-[9px] font-black text-zinc-900 bg-white border border-gray-100 px-6 py-3 rounded-xl hover:bg-zinc-900 hover:text-white group-hover:bg-white group-hover:text-zinc-950 transition-all uppercase tracking-[0.2em] shadow-sm"
+                    className="text-[10px] font-black text-white bg-white/10 border border-white/10 px-8 py-4 rounded-xl hover:bg-white hover:text-black transition-all uppercase tracking-[0.2em] shadow-xl backdrop-blur-md"
                   >
                     ABRIR PROYECTO
                   </Link>

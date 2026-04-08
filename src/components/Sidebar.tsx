@@ -53,20 +53,20 @@ export function Sidebar() {
   }, []);
 
   return (
-    <aside className="fixed top-0 left-0 z-50 h-full w-[100px] xl:w-[280px] bg-white border-r border-gray-200/50 flex flex-col py-10 px-6 transition-all duration-500 hidden lg:flex shadow-sm">
+    <aside className="fixed top-0 left-0 z-50 h-full w-[100px] xl:w-[280px] bg-black/40 backdrop-blur-3xl border-r border-white/5 flex flex-col py-10 px-6 transition-all duration-500 hidden lg:flex shadow-2xl">
       {/* Brand Logo Section */}
       <div className="flex items-center gap-4 mb-14 px-2">
-        <div className="w-12 h-12 bg-black rounded-2xl flex items-center justify-center text-white shadow-2xl shadow-black/20 shrink-0">
-          <Sparkles size={24} />
+        <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-white shadow-2xl shadow-indigo-500/10 shrink-0">
+          <Sparkles size={24} className="text-white drop-shadow-md" />
         </div>
         <div className="hidden xl:block">
-          <h2 className="text-lg font-black tracking-tighter text-zinc-900 leading-none">916 STUDIO</h2>
-          <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mt-1">Production Hub</p>
+          <h2 className="text-xl font-black tracking-tighter text-white leading-none italic">916 STUDIO</h2>
+          <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em] mt-1.5">Production Hub</p>
         </div>
       </div>
 
       {/* Main Navigation Items */}
-      <nav className="flex-1 space-y-3">
+      <nav className="flex-1 space-y-4">
         {navItems.map((item) => {
           const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
           return (
@@ -74,41 +74,52 @@ export function Sidebar() {
               key={item.id}
               href={item.href}
               className={cn(
-                "w-full flex items-center gap-4 px-5 py-4 rounded-[2rem] transition-all group",
+                "w-full flex items-center gap-4 px-6 py-4 rounded-[2rem] transition-all group relative overflow-hidden",
                 isActive
-                  ? "bg-zinc-900 text-white shadow-xl shadow-zinc-200"
-                  : "text-zinc-400 hover:bg-zinc-50 hover:text-zinc-600"
+                  ? "bg-white/10 text-white shadow-2xl border border-white/10 shadow-indigo-500/5 ring-1 ring-white/5"
+                  : "text-white/30 hover:bg-white/5 hover:text-white/60"
               )}
             >
+              {isActive && (
+                <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 to-transparent opacity-50" />
+              )}
               <item.icon 
                 size={20} 
                 className={cn(
-                  "transition-all",
-                  isActive ? "text-white" : "group-hover:scale-110"
+                  "transition-all relative z-10",
+                  isActive ? "text-indigo-400 drop-shadow-[0_0_8px_rgba(129,140,248,0.5)]" : "group-hover:scale-110"
                 )} 
               />
-              <span className="hidden xl:block text-xs font-black uppercase tracking-widest">{item.name}</span>
-              {item.name === 'Mensajes' && <span className="ml-auto w-5 h-5 bg-indigo-500 rounded-full text-[10px] flex items-center justify-center text-white">3</span>}
+              <span className="hidden xl:block text-[11px] font-black uppercase tracking-[0.2em] relative z-10">{item.name}</span>
             </Link>
           );
         })}
       </nav>
 
       {/* Premium Plan Card & Settings */}
-      <div className="mt-auto pt-10 border-t border-zinc-100 px-2 space-y-4">
-        <div className="hidden xl:block bg-gradient-to-br from-[#DFFF00] to-[#BFFF00] p-6 rounded-[2.5rem] shadow-xl shadow-lime-200/50 relative overflow-hidden group mb-4">
-          <div className="absolute top-0 right-0 w-20 h-20 bg-white/20 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
-          <h4 className="text-[10px] font-black text-lime-900 uppercase tracking-widest mb-2 relative z-10">Premium Plan</h4>
-          <p className="text-xs font-black text-lime-950 leading-tight mb-4 relative z-10">Desbloquea IA de Scouting</p>
-          <button className="w-full py-3 bg-black text-white rounded-2xl text-[9px] font-black uppercase tracking-widest shadow-xl hover:scale-105 active:scale-95 transition-all relative z-10">Actualizar</button>
+      <div className="mt-auto pt-10 border-t border-white/5 px-2 space-y-4">
+        <div className="hidden xl:block bg-gradient-to-br from-zinc-900 to-black p-8 rounded-[2.5rem] shadow-2xl shadow-black/40 relative overflow-hidden group mb-6 border border-white/5 hover:border-indigo-500/20 transition-all">
+          <div className="absolute -top-10 -right-10 w-32 h-32 bg-indigo-500/10 rounded-full blur-[60px] group-hover:bg-indigo-500/20 transition-all" />
+          <div className="flex items-center gap-3 mb-4 relative z-10">
+            <div className="w-8 h-8 bg-white/5 rounded-xl flex items-center justify-center border border-white/10">
+              <Activity size={14} className="text-indigo-400" />
+            </div>
+            <div className="flex flex-col">
+              <h4 className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em]">Tier: Advanced</h4>
+            </div>
+          </div>
+          <h3 className="text-base font-black text-white uppercase tracking-tighter leading-tight mb-5 relative z-10">IA Production Suite</h3>
+          <button className="w-full py-4 bg-white text-black rounded-[1.5rem] text-[10px] font-black uppercase tracking-[0.2em] shadow-2xl hover:bg-zinc-100 active:scale-95 transition-all relative z-10">
+            Upgrade Studio
+          </button>
         </div>
         
         <Link 
           href="/settings"
-          className="w-full flex items-center gap-4 px-5 py-4 text-zinc-400 hover:bg-zinc-50 rounded-[2rem] transition-all"
+          className="w-full flex items-center gap-4 px-6 py-4 text-white/30 hover:bg-white/5 hover:text-white rounded-[2rem] transition-all border border-transparent hover:border-white/5"
         >
-          <Settings size={20} />
-          <span className="hidden xl:block text-xs font-black uppercase tracking-widest">Ajustes</span>
+          <Settings size={20} className="transition-transform group-hover:rotate-45" />
+          <span className="hidden xl:block text-[11px] font-black uppercase tracking-[0.2em]">Ajustes</span>
         </Link>
       </div>
     </aside>

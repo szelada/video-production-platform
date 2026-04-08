@@ -138,49 +138,52 @@ export const QuickQuote: React.FC<QuickQuoteProps> = ({
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-1000">
       {/* Header with Global Controls */}
-      <div className="bg-white rounded-[2.5rem] p-8 border border-gray-100 shadow-sm flex flex-col lg:flex-row items-center justify-between gap-8">
-        <div className="flex items-center gap-6">
-          <div className="p-4 bg-indigo-600 text-white rounded-[2rem] shadow-xl shadow-indigo-100/50">
-            <Calculator size={32} />
+      <div className="glass-bento p-10 border border-white/5 shadow-2xl flex flex-col lg:flex-row items-center justify-between gap-10">
+        <div className="flex items-center gap-8">
+          <div className="p-5 bg-white/5 border border-white/10 text-white rounded-[2rem] shadow-2xl backdrop-blur-2xl">
+            <Calculator size={40} className="text-indigo-400 drop-shadow-lg" />
           </div>
           <div>
-            <h2 className="text-3xl font-black text-gray-900 uppercase tracking-tighter">Cotización Rápida</h2>
-            <p className="text-[10px] text-gray-500 uppercase font-black tracking-[0.3em] mt-1">Reacción Ágil de Presupuesto Pre-pro</p>
+            <h2 className="text-4xl font-black text-white uppercase tracking-tightest italic">Cotización Rápida</h2>
+            <div className="flex items-center gap-3 mt-2">
+              <span className="px-3 py-1 bg-white/5 rounded-lg border border-white/10 text-[9px] font-black uppercase tracking-widest text-white/30">Agilidad Financiera</span>
+              <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
+            </div>
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="bg-gray-50 p-4 rounded-3xl border border-gray-100 flex items-center gap-4">
-            <div className="p-2 bg-white rounded-xl shadow-sm text-indigo-600"><Calendar size={18} /></div>
+        <div className="flex flex-wrap items-center gap-6">
+          <div className="bg-white/5 p-5 rounded-[2rem] border border-white/10 flex items-center gap-5 shadow-inner backdrop-blur-md">
+            <div className="p-3 bg-white/5 rounded-xl border border-white/10 text-indigo-400"><Calendar size={20} /></div>
             <div>
-              <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">Días de Rodaje</p>
-              <div className="flex items-center gap-2 mt-1">
-                <button onClick={() => setShootDays(Math.max(1, shootDays - 1))} className="w-6 h-6 flex items-center justify-center bg-white border border-gray-100 rounded-lg text-gray-400 hover:text-indigo-600 transition-colors">-</button>
+              <p className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em] mb-1">Días de Rodaje</p>
+              <div className="flex items-center gap-3">
+                <button onClick={() => setShootDays(Math.max(1, shootDays - 1))} className="w-8 h-8 flex items-center justify-center bg-white/5 border border-white/10 rounded-xl text-white/40 hover:text-white transition-all">-</button>
                 <input 
                   type="number" 
                   value={shootDays} 
                   onChange={(e) => setShootDays(parseInt(e.target.value) || 1)}
-                  className="w-12 text-center bg-transparent font-black text-gray-900 focus:outline-none"
+                  className="w-14 text-center bg-transparent font-black text-white focus:outline-none text-lg"
                 />
-                <button onClick={() => setShootDays(shootDays + 1)} className="w-6 h-6 flex items-center justify-center bg-white border border-gray-100 rounded-lg text-gray-400 hover:text-indigo-600 transition-colors">+</button>
+                <button onClick={() => setShootDays(shootDays + 1)} className="w-8 h-8 flex items-center justify-center bg-white/5 border border-white/10 rounded-xl text-white/40 hover:text-white transition-all">+</button>
               </div>
             </div>
           </div>
 
-          <div className="bg-gray-50 p-4 rounded-3xl border border-gray-100 flex items-center gap-4">
-            <div className="p-2 bg-white rounded-xl shadow-sm text-indigo-600"><Percent size={18} /></div>
+          <div className="bg-white/5 p-5 rounded-[2rem] border border-white/10 flex items-center gap-5 shadow-inner backdrop-blur-md">
+            <div className="p-3 bg-white/5 rounded-xl border border-white/10 text-indigo-400"><Percent size={20} /></div>
             <div>
-              <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">Markup / Comisión</p>
-              <div className="flex items-center gap-2 mt-1">
+              <p className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em] mb-1">Markup / FEE</p>
+              <div className="flex items-center gap-3">
                 <input 
                   type="number" 
                   value={markupPercent} 
                   onChange={(e) => setMarkupPercent(parseFloat(e.target.value) || 0)}
-                  className="w-12 text-center bg-transparent font-black text-gray-900 focus:outline-none"
+                  className="w-16 text-center bg-transparent font-black text-white focus:outline-none text-lg"
                 />
-                <span className="text-[10px] font-black text-gray-400">%</span>
+                <span className="text-[11px] font-black text-white/20">%</span>
               </div>
             </div>
           </div>
@@ -188,17 +191,17 @@ export const QuickQuote: React.FC<QuickQuoteProps> = ({
           <button 
             onClick={handleSaveAll}
             disabled={isSaving}
-            className={`px-8 py-5 rounded-[2rem] font-black text-xs uppercase tracking-widest transition-all flex items-center gap-3 shadow-xl ${
-              saveStatus === 'success' ? 'bg-emerald-500 text-white' :
-              saveStatus === 'error' ? 'bg-rose-500 text-white' :
-              'bg-gray-900 text-white hover:bg-black'
+            className={`px-10 py-6 rounded-[2rem] font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center gap-4 shadow-2xl backdrop-blur-xl ${
+              saveStatus === 'success' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' :
+              saveStatus === 'error' ? 'bg-rose-500/20 text-rose-400 border border-rose-500/40' :
+              'bg-white text-black hover:scale-105 active:scale-95'
             }`}
           >
             {isSaving ? <RefreshCw size={18} className="animate-spin" /> : 
              saveStatus === 'success' ? <CheckCircle2 size={18} /> :
              saveStatus === 'error' ? <AlertCircle size={18} /> :
              <Save size={18} />}
-            {isSaving ? 'GUARDANDO...' : saveStatus === 'success' ? 'ACTUALIZADO' : 'GUARDAR CAMBIOS'}
+            {isSaving ? 'GUARDANDO...' : saveStatus === 'success' ? 'ACTUALIZADO' : 'CONSOLIDAR CAMBIOS'}
           </button>
         </div>
       </div>
@@ -207,68 +210,71 @@ export const QuickQuote: React.FC<QuickQuoteProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
         
         {/* Editable Table */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white rounded-[3rem] border border-gray-100 shadow-sm overflow-hidden">
+        <div className="lg:col-span-2 space-y-8">
+          <div className="glass-bento border border-white/5 shadow-2xl overflow-hidden">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-gray-50/50 border-b border-gray-100">
-                  <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">Categoría</th>
-                  <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">Config.</th>
-                  <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">Costo Unit/Día</th>
-                  <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Subtotal</th>
+                <tr className="bg-white/5 border-b border-white/5">
+                  <th className="px-10 py-8 text-[11px] font-black text-white/20 uppercase tracking-[0.3em]">Categoría</th>
+                  <th className="px-10 py-8 text-[11px] font-black text-white/20 uppercase tracking-[0.3em]">Config.</th>
+                  <th className="px-10 py-8 text-[11px] font-black text-white/20 uppercase tracking-[0.3em]">Costo Unit/Día</th>
+                  <th className="px-10 py-8 text-[11px] font-black text-white/20 uppercase tracking-[0.3em] text-right">Subtotal</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-white/5">
                 {localBudgets.map((item) => {
                   const categoryTotal = item.is_day_multiplier ? item.planned_amount * shootDays : item.planned_amount;
                   return (
-                    <tr key={item.id} className="group hover:bg-gray-50/30 transition-colors">
-                      <td className="px-8 py-6">
-                        <div className="flex items-center gap-3">
-                          <div className="p-2.5 bg-gray-100 text-gray-500 rounded-xl group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                    <tr key={item.id} className="group hover:bg-white/5 transition-all">
+                      <td className="px-10 py-8">
+                        <div className="flex items-center gap-5">
+                          <div className="p-3 bg-white/5 text-white/30 rounded-xl group-hover:bg-indigo-500/20 group-hover:text-indigo-400 transition-all border border-white/5">
                             {getCategoryIcon(item.category)}
                           </div>
                           <div>
-                            <p className="text-sm font-black text-gray-900 uppercase tracking-tighter">{item.category}</p>
-                            <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">
-                              {item.is_day_multiplier ? 'Costo Diario' : 'Costo Fijo'}
+                            <p className="text-base font-black text-white uppercase tracking-tightest italic group-hover:translate-x-1 transition-all">{item.category}</p>
+                            <p className="text-[9px] text-white/20 font-black uppercase tracking-[0.3em] mt-1">
+                              {item.is_day_multiplier ? 'Costo Variable' : 'Costo Directo'}
                             </p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-8 py-6">
-                        <div className="flex items-center gap-2">
+                      <td className="px-10 py-8">
+                        <div className="flex items-center gap-3">
                           <button 
                             onClick={() => handleToggleFlag(item.id, 'is_day_multiplier')}
-                            className={`p-2 rounded-xl transition-all ${item.is_day_multiplier ? 'bg-amber-50 text-amber-600' : 'bg-gray-50 text-gray-300'}`}
+                            className={`p-2.5 rounded-xl transition-all border ${item.is_day_multiplier ? 'bg-amber-500/10 border-amber-500/20 text-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.1)]' : 'bg-white/5 border-white/5 text-white/10 hover:text-white/30'}`}
                             title={item.is_day_multiplier ? "Multiplica por días" : "Costo único"}
                           >
-                            <Calendar size={14} />
+                            <Calendar size={16} />
                           </button>
                           <button 
                             onClick={() => handleToggleFlag(item.id, 'is_commissionable')}
-                            className={`p-2 rounded-xl transition-all ${item.is_commissionable ? 'bg-indigo-50 text-indigo-600' : 'bg-gray-50 text-gray-300'}`}
+                            className={`p-2.5 rounded-xl transition-all border ${item.is_commissionable ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.1)]' : 'bg-white/5 border-white/5 text-white/10 hover:text-white/30'}`}
                             title={item.is_commissionable ? "Aplica Markup" : "Exento de Markup"}
                           >
-                            <Percent size={14} />
+                            <Percent size={16} />
                           </button>
                         </div>
                       </td>
-                      <td className="px-8 py-6">
-                        <div className="flex items-center gap-2 max-w-[140px] px-4 py-2 bg-gray-50/80 rounded-xl border border-gray-100 group-hover:bg-white group-hover:border-indigo-100 transition-all">
-                          <span className="text-gray-400 font-bold">$</span>
+                      <td className="px-10 py-8">
+                        <div className="flex items-center gap-3 max-w-[160px] px-5 py-3 bg-white/5 rounded-2xl border border-white/10 group-hover:border-indigo-500/30 transition-all shadow-inner backdrop-blur-md">
+                          <span className="text-white/20 font-black">$</span>
                           <input 
                             type="number" 
                             value={item.planned_amount} 
                             onChange={(e) => handleUpdateLocalAmount(item.id, parseFloat(e.target.value) || 0)}
-                            className="bg-transparent font-black text-gray-900 focus:outline-none w-full text-sm"
+                            className="bg-transparent font-black text-white focus:outline-none w-full text-sm"
                           />
                         </div>
                       </td>
-                      <td className="px-8 py-6 text-right">
-                        <span className={`text-sm font-black ${item.is_day_multiplier ? 'text-indigo-600' : 'text-gray-900'}`}>
-                          ${categoryTotal.toLocaleString()}
-                        </span>
+                      <td className="px-10 py-8 text-right">
+                        <div className="flex flex-col items-end">
+                           <span className={`text-xl font-black tracking-tightest ${item.is_day_multiplier ? 'text-indigo-400' : 'text-white'}`}>
+                             ${categoryTotal.toLocaleString()}
+                           </span>
+                           {item.is_day_multiplier && <span className="text-[8px] font-black text-white/20 uppercase tracking-widest">Calculado x{shootDays} días</span>}
+                        </div>
                       </td>
                     </tr>
                   );
@@ -277,64 +283,68 @@ export const QuickQuote: React.FC<QuickQuoteProps> = ({
             </table>
           </div>
 
-          <div className="p-6 bg-indigo-50/50 rounded-3xl border border-indigo-100 border-dashed flex items-center gap-4 text-indigo-600/80">
-            <Info size={20} />
-            <p className="text-[10px] font-bold uppercase tracking-widest leading-relaxed">
-              * El Markup se aplica únicamente a las categorías marcadas con el icono de porcentaje (%). 
-              Las categorías con el icono de calendario se multiplican por los días de rodaje (<span className="text-indigo-600 font-black">{shootDays}</span>).
+          <div className="p-8 bg-indigo-500/5 rounded-[2.5rem] border border-indigo-500/10 border-dashed flex items-center gap-5 text-indigo-400/60 shadow-xl backdrop-blur-sm">
+            <Info size={24} className="shrink-0" />
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] leading-relaxed">
+              * El Markup inteligente se aplica únicamente a las categorías con bandera de comisión activa. 
+              Los costos variables se sincronizan con los <span className="text-indigo-400 font-black">{shootDays}</span> días de rodaje declarados globalmente.
             </p>
           </div>
         </div>
 
         {/* Totals & Summary Card */}
-        <div className="space-y-6">
-          <div className="bg-white rounded-[3rem] p-10 border border-gray-100 shadow-2xl shadow-indigo-100/30 sticky top-10 flex flex-col gap-8">
-            <h3 className="text-2xl font-black text-gray-900 uppercase tracking-tighter">Resumen Ejecutivo</h3>
+        <div className="space-y-8">
+          <div className="glass-bento p-12 border border-white/5 shadow-2xl sticky top-32 flex flex-col gap-10">
+            <h3 className="text-3xl font-black text-white uppercase tracking-tightest italic">Resumen</h3>
             
-            <div className="space-y-6">
+            <div className="space-y-8">
               <div className="flex items-center justify-between group">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-gray-50 text-gray-400 rounded-lg group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-all"><Wallet size={16} /></div>
-                  <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Costo Producción</span>
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-white/5 text-white/20 rounded-xl group-hover:bg-white/10 group-hover:text-white transition-all border border-white/5"><Wallet size={20} /></div>
+                  <span className="text-[11px] font-black text-white/30 uppercase tracking-[0.2em]">Costo Base</span>
                 </div>
-                <span className="text-lg font-black text-gray-900">${totals.baseTotal.toLocaleString()}</span>
+                <span className="text-2xl font-black text-white/80">${totals.baseTotal.toLocaleString()}</span>
               </div>
 
               <div className="flex items-center justify-between group">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg group-hover:bg-indigo-600 group-hover:text-white transition-all"><TrendingUp size={16} /></div>
-                  <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest">Markup ({markupPercent}%)</span>
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-indigo-500/10 text-indigo-400 rounded-xl group-hover:bg-indigo-500/20 group-hover:text-indigo-400 transition-all border border-indigo-500/20"><TrendingUp size={20} /></div>
+                  <span className="text-[11px] font-black text-indigo-400 uppercase tracking-[0.2em]">Markup Comisionable</span>
                 </div>
-                <span className="text-lg font-black text-indigo-600">+ ${totals.markupAmount.toLocaleString()}</span>
+                <div className="text-right">
+                  <span className="text-2xl font-black text-indigo-400">+ ${totals.markupAmount.toLocaleString()}</span>
+                  <p className="text-[9px] font-black text-indigo-400/40 uppercase tracking-widest mt-1">Sujeto a {markupPercent}% FEE</p>
+                </div>
               </div>
 
-              <div className="h-px bg-gray-100 my-2" />
+              <div className="h-px bg-white/5 my-4" />
 
-              <div className="p-8 bg-gradient-to-br from-indigo-600 to-violet-700 rounded-[2.5rem] text-white shadow-xl shadow-indigo-200">
-                <p className="text-[10px] font-black text-indigo-100 uppercase tracking-[0.2em] mb-2 opacity-80">Total Cotización</p>
-                <div className="flex items-end justify-between">
-                  <span className="text-4xl font-black tracking-tighter">${totals.grandTotal.toLocaleString()}</span>
-                  <div className="flex flex-col items-end">
-                    <span className="text-[9px] font-black text-indigo-100/60 uppercase">VALOR FINAL</span>
-                    <span className="text-[9px] font-black text-indigo-100/60 uppercase">SIN I.V.A</span>
+              <div className="p-10 bg-gradient-to-br from-indigo-600 to-violet-800 rounded-[3rem] text-white shadow-2xl shadow-indigo-900/50 border border-white/10 relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-white/20 transition-all" />
+                <p className="text-[10px] font-black text-indigo-100/40 uppercase tracking-[0.3em] mb-3 relative z-10">Total Cotizado</p>
+                <div className="flex items-end justify-between relative z-10">
+                  <span className="text-5xl font-black tracking-tightest drop-shadow-2xl">${totals.grandTotal.toLocaleString()}</span>
+                  <div className="flex flex-col items-end opacity-40">
+                    <span className="text-[9px] font-black uppercase">NET VALUE</span>
+                    <span className="text-[9px] font-black uppercase">NO TAX</span>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="space-y-4 pt-4">
-              <div className="flex items-start gap-4 p-5 bg-amber-50 rounded-2xl border border-amber-100">
-                <AlertTriangle size={20} className="text-amber-600 mt-1" />
+            <div className="space-y-6 pt-6">
+              <div className="flex items-start gap-5 p-6 bg-amber-500/10 rounded-[2rem] border border-amber-500/20 shadow-xl backdrop-blur-md">
+                <AlertTriangle size={24} className="text-amber-500 mt-1 shrink-0" />
                 <div>
-                  <p className="text-[9px] font-black text-amber-900 uppercase">Aviso de Rentabilidad</p>
-                  <p className="text-[10px] text-amber-700 font-medium mt-1 leading-relaxed">
-                    Recuerda que los costos de post-producción y talento suelen ser fijos, mientras que equipos y crew son sensibles a los días de rodaje.
+                  <p className="text-[10px] font-black text-amber-500 uppercase tracking-[0.2em] mb-1">Health Check</p>
+                  <p className="text-[11px] text-white/50 font-medium leading-relaxed">
+                    Las proyecciones se basan en el plan de rodaje activo. Cualquier cambio en jornadas afectará el Margen Neto.
                   </p>
                 </div>
               </div>
 
-              <button className="w-full py-5 bg-indigo-50 text-indigo-600 rounded-[2rem] font-black text-[10px] uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all flex items-center justify-center gap-3">
-                <RefreshCw size={16} /> RECALCULAR TODO
+              <button className="w-full py-6 bg-white/5 text-white/40 border border-white/10 rounded-[2.5rem] font-black text-[11px] uppercase tracking-[0.3em] hover:bg-white/10 hover:text-white transition-all flex items-center justify-center gap-4 group">
+                <RefreshCw size={18} className="group-hover:rotate-180 transition-all duration-700" /> RECALCULAR PROYECCIÓN
               </button>
             </div>
           </div>

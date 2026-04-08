@@ -9,6 +9,7 @@ import AlternateDashboard from '@/components/dashboard/alternate/AlternateDashbo
 import { PhasePre } from '@/components/project-detail/PhasePre';
 import { PhasePro } from '@/components/project-detail/PhasePro';
 import { PhaseEntrega } from '@/components/project-detail/PhaseEntrega';
+import { FinancialModule } from '@/components/project-detail/FinancialModule';
 import {
 
   ArrowLeft,
@@ -68,11 +69,16 @@ import {
   Globe,
   Monitor,
   CheckCircle2,
-  Film
+  Film,
+  Zap,
+  Triangle
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+
+// New Components
+import { ControlCenter } from '@/components/project-detail/ControlCenter';
 
 // UI Components
 import { Card } from '@/components/ui/Card';
@@ -166,12 +172,13 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
   const [artItems, setArtItems] = useState<any[]>([]);
   
   // Production Phases & Sub-tabs
-  const [activePhase, setActivePhase] = useState<'pre' | 'pro' | 'entrega'>('pre');
+  const [activePhase, setActivePhase] = useState<'pre' | 'pro' | 'entrega' | 'finanzas'>('pre');
   const [activeSubTab, setActiveSubTab] = useState<string>('resumen');
   const [breakdownFilter, setBreakdownFilter] = useState<string>('Todos');
   
   // Pre-production Materials State
   const [materials, setMaterials] = useState<any[]>([]);
+  const [quotations, setQuotations] = useState<any[]>([]);
 
 
   const [breakdownItems, setBreakdownItems] = useState<any[]>([]);
@@ -852,6 +859,13 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
         .eq('project_id', projectId)
         .order('expense_date', { ascending: false });
       setExpenses(expensesData || []);
+
+      const { data: quotesData } = await supabase
+        .from('project_quotations')
+        .select('*')
+        .eq('project_id', projectId)
+        .order('created_at', { ascending: false });
+      setQuotations(quotesData || []);
     } catch (error) {
       console.error('Error fetching budget data:', error);
     }
@@ -916,6 +930,92 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
       } else {
         console.error('Error fetching breakdown data:', error);
       }
+    }
+  };
+
+  const generateDynamicAlerts = () => {
+    const alerts: any[] = [];
+
+    // 1. Logic for Scouting (Drafts/Pending)
+    const pendingScouting = scoutingReports.filter(r => r.status === 'draft' || r.status === 'pending');
+    if (pendingScouting.length > 0) {
+      alerts.push({
+        id: 'pending-scouting-reports',
+        type: 'info',
+        message: `Hay ${pendingScouting.length} reportes de scouting pendientes de revisión.`,
+        actionUrl: 'scouting'
+      });
+    }
+
+    // 2. Logic for Locations (Missing GPS)
+    const missingGps = locations.filter(l => !l.latitude || !l.longitude);
+    if (missingGps.length > 0) {
+      alerts.push({
+        id: 'missing-gps',
+        type: 'warning',
+        message: `${missingGps.length} locaciones aprobadas no tienen coordenadas GPS.`,
+        actionUrl: 'logistics',
+        subTab: 'locations'
+      });
+    }
+
+    // 3. Logic for Finances (Pending Approvals)
+    const pendingQuotes = quotations.filter(q => q.status === 'sent' || q.status === 'draft');
+    if (pendingQuotes.length > 0) {
+      alerts.push({
+        id: 'pending-quotes',
+        type: 'warning',
+        message: `${pendingQuotes.length} cotizaciones pendientes de aprobación final.`,
+        actionUrl: 'cotizaciones'
+      });
+    }
+
+    // 4. Logic for Breakdown (Missing Assignments)
+    const unassignedItems = breakdownItems.filter(i => i.status === 'pending');
+    if (unassignedItems.length > 0 && activePhase === 'pre') {
+      alerts.push({
+        id: 'unassigned-breakdown',
+        type: 'error',
+        message: `${unassignedItems.length} elementos del desglose aún no tienen recursos asignados.`,
+        actionUrl: 'desglose'
+      });
+    }
+
+    // 5. Critical: Missing Materials
+    if (materials.length === 0 && activePhase === 'pre') {
+      alerts.push({
+        id: 'missing-materials',
+        type: 'error',
+        message: 'No se han cargado guiones ni storyboards para este proyecto.',
+        actionUrl: 'base'
+      });
+    }
+
+    return alerts;
+  };
+
+  const handleAlertClick = (alert: any) => {
+    if (alert.actionUrl) {
+      if (alert.actionUrl === 'cotizaciones') {
+        setActivePhase('pre');
+        setActiveSubTab('cotizaciones');
+      } else if (alert.actionUrl === 'scouting') {
+        setActivePhase('pre');
+        setActiveSubTab('scouting');
+      } else if (alert.actionUrl === 'logistics') {
+        setActivePhase('pro');
+        setActiveSubTab('logistics');
+        if (alert.subTab) setLogisticsSubTab(alert.subTab as any);
+      } else if (alert.actionUrl === 'desglose') {
+        setActivePhase('pre');
+        setActiveSubTab('desglose');
+      } else if (alert.actionUrl === 'base') {
+        setActivePhase('pre');
+        setActiveSubTab('base');
+      }
+      
+      // Smooth scroll to top to show the new tab
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
@@ -2125,7 +2225,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
     <div 
       className="flex flex-col min-h-screen transition-all duration-700"
       style={{ 
-        backgroundColor: brandConfig.platform_bg_color,
+        backgroundColor: 'transparent',
         fontFamily: brandConfig.platform_font_family === 'Outfit' ? '"Outfit", sans-serif' : 
                     brandConfig.platform_font_family === 'Roboto' ? '"Roboto", sans-serif' : 
                     brandConfig.platform_font_family === 'Montserrat' ? '"Montserrat", sans-serif' : 
@@ -2135,74 +2235,98 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
         '--brand-accent': brandConfig.brand_color
       } as React.CSSProperties}
     >
-      <style jsx global>{`
-        .bg-white { background-color: var(--platform-card, #ffffff) !important; }
-        .bg-gray-50 { background-color: ${brandConfig.platform_bg_color} !important; opacity: 0.9; }
-      `}</style>
-      {/* Project Header (Local Top Bar) */}
-      <div className="bg-white/80 backdrop-blur-md border-b border-gray-200 flex items-center justify-between px-10 py-6 sticky top-0 z-30">
-        <div className="flex items-center gap-6">
-          <Link href="/projects" className="p-3 bg-gray-50 hover:bg-gray-100 rounded-xl text-gray-500 transition-all border border-gray-100">
-            <ArrowLeft size={18} />
+      {/* Project Header (Regie Control Center) */}
+      <div className="bg-zinc-950/40 backdrop-blur-3xl border-b border-white/5 flex items-center justify-between px-10 py-5 sticky top-0 z-40">
+        <div className="flex items-center gap-8">
+          <Link href="/projects" className="group flex items-center gap-3">
+             <div className="p-3 bg-white/5 group-hover:bg-white/10 rounded-xl text-white/40 transition-all border border-white/10 group-hover:text-white">
+                <ArrowLeft size={18} />
+             </div>
+             <div className="h-8 w-[1px] bg-white/5" />
           </Link>
-          <div>
-            <div className="flex items-center gap-3">
-              <h2 className="text-2xl font-black text-gray-900 tracking-tight uppercase">{project.name}</h2>
-              <Badge variant={project.status === 'production' ? 'success' : 'info'}>
-                {project.status === 'production' ? 'En Rodaje' : 'Pre-Producción'}
-              </Badge>
+          
+          <div className="flex flex-col">
+            <div className="flex items-center gap-4">
+              <h2 className="text-2xl font-black text-white tracking-tighter uppercase italic drop-shadow-2xl">
+                {project.name}
+              </h2>
+              <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/10">
+                <div className={`w-1.5 h-1.5 rounded-full ${
+                  activePhase === 'pro' ? 'bg-[#D9FF54]' : 
+                  activePhase === 'entrega' ? 'bg-emerald-400' : 
+                  'bg-amber-400'
+                } animate-pulse`} />
+                <span className="text-[10px] font-black text-white/70 uppercase tracking-widest">
+                  {activePhase === 'pre' ? 'Pre-Producción' : 
+                   activePhase === 'pro' ? 'Producción' : 
+                   activePhase === 'entrega' ? 'Cierre / Entrega' : 'Finanzas'}
+                </span>
+              </div>
             </div>
-            <p className="text-xs text-gray-400 font-medium mt-0.5 flex items-center gap-2">
-              <Calendar size={12} /> {new Date(project.start_date || '').toLocaleDateString('es-ES', { month: 'long', day: 'numeric', year: 'numeric' })}
+            
+            <p className="text-[10px] text-white/30 font-black uppercase tracking-[0.2em] mt-1.5 flex items-center gap-2">
+              <Zap size={10} className="text-[#D9FF54]" /> 
+              Estado Real: <span className="text-white/60">{project.status === 'production' ? 'En Rodaje' : 'Pre-Producción'}</span>
+              <span className="mx-2 opacity-20">|</span>
+              Día: {project.current_day_number || 1}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
-          <div className="flex -space-x-3 pr-4 border-r border-gray-100 py-1">
-            {crew.slice(0, 4).map((member: any) => (
-              <div key={member.id} className="w-9 h-9 rounded-full border-2 border-white bg-indigo-50 flex items-center justify-center overflow-hidden shadow-sm" title={member.profiles?.full_name}>
-                {member.profiles?.avatar_url ? (
-                  <img src={member.profiles.avatar_url} alt="" className="w-full h-full object-cover" />
-                ) : (
-                  <Users size={14} className="text-indigo-400" />
-                )}
-              </div>
-            ))}
-            {crew.length > 4 && (
-              <div className="w-9 h-9 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-[10px] font-black text-gray-400 shadow-sm">
-                +{crew.length - 4}
-              </div>
+        <div className="flex items-center gap-6">
+          {/* Executive Crew Quick View */}
+          <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-white/5 rounded-2xl border border-white/10">
+            <div className="flex -space-x-2">
+              {crew.slice(0, 3).map((member: any) => (
+                <div key={member.id} className="w-7 h-7 rounded-full border border-zinc-900 overflow-hidden bg-zinc-800">
+                  {member.profiles?.avatar_url ? (
+                    <img src={member.profiles.avatar_url} alt="" className="w-full h-full object-cover opacity-80" />
+                  ) : (
+                    <Users size={12} className="text-white/20 m-1.5" />
+                  )}
+                </div>
+              ))}
+            </div>
+            <span className="text-[9px] font-black text-white/40 uppercase tracking-widest pl-2">Regie Team</span>
+          </div>
+
+          <div className="h-8 w-[1px] bg-white/5" />
+
+          <div className="flex items-center gap-4">
+            <button
+               onClick={() => setIsAlternateView(!isAlternateView)}
+               className={`p-3 rounded-xl transition-all border ${
+                 isAlternateView 
+                   ? 'bg-[#D9FF54] text-black border-[#D9FF54]/20 shadow-lg shadow-[#D9FF54]/10' 
+                   : 'bg-white/5 text-white/40 border-white/10 hover:border-white/20'
+               }`}
+               title="Cambiar Vista"
+            >
+               <LayoutDashboard size={20} />
+            </button>
+
+            {hasPermission('edit_project') && (
+              <Button 
+                variant="primary" 
+                size="md" 
+                onClick={openEditProject}
+                className="bg-white text-black font-black uppercase text-[10px] tracking-widest rounded-xl hover:bg-gray-100"
+              >
+                <Settings size={16} className="mr-2" /> GESTIÓN
+              </Button>
             )}
           </div>
-          <div className="flex items-center gap-2 mr-2">
-            <button
-              onClick={() => setIsAlternateView(!isAlternateView)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                isAlternateView 
-                  ? 'bg-[#D9FF54] text-black shadow-lg shadow-[#D9FF54]/20' 
-                  : 'bg-white text-gray-400 border border-gray-100 hover:border-gray-200'
-              }`}
-            >
-              <LayoutDashboard size={14} />
-              {isAlternateView ? 'VISTA APPLE' : 'VISTA CLÁSICA'}
-            </button>
-          </div>
-          {hasPermission('edit_project') && (
-            <Button variant="primary" size="md" onClick={openEditProject}>
-              <Settings size={18} /> GESTIONAR
-            </Button>
-          )}
         </div>
       </div>
 
       {/* Phase Selector (Navigation Main) */}
-      <div className="bg-white/40 backdrop-blur-xl border-b border-gray-100 px-10 py-1">
+      <div className="bg-zinc-900/40 backdrop-blur-3xl border-b border-white/5 px-10 py-1">
         <div className="flex items-center gap-2">
           {[
             { id: 'pre', label: 'Pre-producción', color: 'bg-amber-500' },
             { id: 'pro', label: 'Producción', color: 'bg-indigo-600' },
             { id: 'entrega', label: 'Cierre / Entrega', color: 'bg-emerald-500' },
+            { id: 'finanzas', label: 'Finanzas / Rentabilidad', color: 'bg-indigo-400' },
           ].map((phase) => (
             <button
               key={phase.id}
@@ -2212,11 +2336,11 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
               }}
               className={`px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-3 ${
                 activePhase === phase.id 
-                  ? 'bg-white text-gray-900 shadow-sm border border-gray-100' 
-                  : 'text-gray-400 hover:text-gray-600'
+                  ? 'bg-white/10 text-white shadow-xl border border-white/10' 
+                  : 'text-white/40 hover:text-white/60'
               }`}
             >
-              <div className={`w-2 h-2 rounded-full ${activePhase === phase.id ? phase.color : 'bg-gray-200'}`} />
+              <div className={`w-2 h-2 rounded-full ${activePhase === phase.id ? phase.color : 'bg-white/10'}`} />
               {phase.label}
             </button>
           ))}
@@ -2224,12 +2348,13 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
       </div>
 
       {/* Sub-Tabs Navigation (Contextual) */}
-      <nav className="bg-white/80 backdrop-blur-md border-b border-gray-200 px-10 py-2 sticky top-[80px] z-20">
+      <nav className="bg-black/20 backdrop-blur-3xl border-b border-white/5 px-10 py-2 sticky top-[80px] z-20">
         <div className="flex items-center gap-8 overflow-x-auto scrollbar-hide">
           {activePhase === 'pre' && [
             { id: 'resumen', label: 'Resumen', icon: LayoutDashboard },
             { id: 'base', label: 'Material Base', icon: FolderOpen },
-            { id: 'cotizacion', label: 'Cotización', icon: Calculator },
+            { id: 'cotizacion', label: 'Presupuesto', icon: Calculator },
+            { id: 'cotizaciones', label: 'Cotizaciones', icon: FileText },
             { id: 'desglose', label: 'Desglose', icon: ListChecks },
             { id: 'scouting', label: 'Scouting', icon: Package },
             { id: 'biblia', label: 'Biblia del Proyecto', icon: FileText },
@@ -2239,17 +2364,17 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
               key={tab.id}
               onClick={() => setActiveSubTab(tab.id)}
               className={`group flex flex-col items-center gap-1.5 py-2 px-1 transition-all relative ${
-                activeSubTab === tab.id ? 'text-indigo-600' : 'text-gray-400 hover:text-gray-600'
+                activeSubTab === tab.id ? 'text-indigo-400' : 'text-white/40 hover:text-white/60'
               }`}
             >
               <div className={`p-2 rounded-xl transition-all ${
-                activeSubTab === tab.id ? 'bg-indigo-50 shadow-inner' : 'bg-transparent group-hover:bg-gray-50'
+                activeSubTab === tab.id ? 'bg-indigo-500/10 shadow-inner' : 'bg-transparent group-hover:bg-white/5'
               }`}>
                 <tab.icon size={18} />
               </div>
               <span className="text-[9px] font-black uppercase tracking-widest">{tab.label}</span>
               {activeSubTab === tab.id && (
-                <motion.div layoutId="subTabUnderline" className="absolute -bottom-2 left-0 right-0 h-1 bg-indigo-600 rounded-t-full" />
+                <motion.div layoutId="subTabUnderline" className="absolute -bottom-2 left-0 right-0 h-1 bg-indigo-500 rounded-t-full" />
               )}
             </button>
           ))}
@@ -2306,10 +2431,34 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
               )}
             </button>
           ))}
+
+          {activePhase === 'finanzas' && [
+            { id: 'resumen', icon: LayoutDashboard, label: 'Dashboard' },
+            { id: 'gastos', icon: Wallet, label: 'Gastos Reales' },
+            { id: 'cotizaciones', icon: Calculator, label: 'Presupuesto' },
+          ].map((tab) => (
+             <button
+              key={tab.id}
+              onClick={() => setActiveSubTab(tab.id)}
+              className={`group flex flex-col items-center gap-1.5 py-2 px-1 transition-all relative ${
+                activeSubTab === tab.id ? 'text-indigo-400' : 'text-white/40 hover:text-white/60'
+              }`}
+            >
+              <div className={`p-2 rounded-xl transition-all ${
+                activeSubTab === tab.id ? 'bg-indigo-500/10 shadow-inner' : 'bg-transparent group-hover:bg-white/5'
+              }`}>
+                <tab.icon size={18} />
+              </div>
+              <span className="text-[9px] font-black uppercase tracking-widest">{tab.label}</span>
+              {activeSubTab === tab.id && (
+                <motion.div layoutId="subTabUnderline" className="absolute -bottom-2 left-0 right-0 h-1 bg-indigo-500 rounded-t-full" />
+              )}
+            </button>
+          ))}
         </div>
       </nav>
 
-      <div className="flex-1 overflow-y-auto p-10 bg-gray-50/50">
+      <div className="flex-1 overflow-y-auto p-10 bg-transparent">
           <div className="max-w-7xl mx-auto">
             <AnimatePresence mode="wait">
               {/* PHASE: PRE-PRODUCCIÓN */}
@@ -2353,6 +2502,18 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                   project={project}
                   budgetSummary={budgetSummary}
                   onUpdate={() => fetchBudgetData(id)}
+                  dynamicAlerts={generateDynamicAlerts()}
+                  onAlertClick={handleAlertClick}
+                />
+              )}
+
+              {/* PHASE: FINANZAS / RENTABILIDAD */}
+              {activePhase === 'finanzas' && (
+                <FinancialModule
+                  projectId={id as string}
+                  activeSubTab={activeSubTab}
+                  setActiveSubTab={setActiveSubTab}
+                  project={project}
                 />
               )}
               {/* PHASE: PRE-PRODUCCIÓN - CREDENCIALES (Link to Config) */}
@@ -2929,6 +3090,8 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                   setIsAddCateringModalOpen={setIsAddCateringModalOpen}
                   setIsAddBudgetModalOpen={setIsAddBudgetModalOpen}
                   casting={casting}
+                  dynamicAlerts={generateDynamicAlerts()}
+                  onAlertClick={handleAlertClick}
                 />
               )}
 

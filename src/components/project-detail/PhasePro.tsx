@@ -9,6 +9,7 @@ import {
 
 // Sub-components
 import { PhaseProOverview } from './pro/PhaseProOverview';
+import { ControlCenter } from './ControlCenter';
 import { PhaseProCrew } from './pro/PhaseProCrew';
 import { PhaseProTasks } from './pro/PhaseProTasks';
 import { PhaseProCasting } from './pro/PhaseProCasting';
@@ -87,6 +88,8 @@ interface PhaseProProps {
   setIsAddCateringModalOpen: (open: boolean) => void;
   setIsAddBudgetModalOpen: (open: boolean) => void;
   casting: any[];
+  dynamicAlerts?: any[];
+  onAlertClick?: (alert: any) => void;
 }
 
 export const PhasePro: React.FC<PhaseProProps> = (props) => {
@@ -104,21 +107,53 @@ export const PhasePro: React.FC<PhaseProProps> = (props) => {
   return (
     <AnimatePresence mode="wait">
         {activeSubTab === 'overview' && (
-          <PhaseProOverview 
-            isAlternateView={props.isAlternateView}
-            project={props.project}
-            tasks={props.tasks}
-            crew={props.crew}
-            locations={props.locations}
-            setIsAddExpenseModalOpen={props.setIsAddExpenseModalOpen}
-            setIsAddSupplierModalOpen={props.setIsAddSupplierModalOpen}
-            setIsAddLocationModalOpen={props.setIsAddLocationModalOpen}
-            setActiveSubTab={props.setActiveSubTab}
-            setIsAddCastingModalOpen={props.setIsAddCastingModalOpen}
-            setIsAddTaskModalOpen={props.setIsAddTaskModalOpen}
-            casting={props.casting}
-            activities={props.activities}
-          />
+          <div className="space-y-10">
+            <ControlCenter 
+              project={props.project}
+              crew={props.crew}
+              nextAction={{
+                label: props.callSheets.length === 0 
+                  ? "Generar Call Sheet Día 1" 
+                  : "Enviar Call Sheet a Crew",
+                url: "#"
+              }}
+              alerts={[
+                ...(props.dynamicAlerts || []),
+                ...(props.transportRequests.filter((r: any) => !r.supplier_id).length > 0 ? [{
+                  id: 'transport-pending',
+                  type: 'error' as const,
+                  message: `Hay ${props.transportRequests.filter((r: any) => !r.supplier_id).length} pedidos de transporte sin asignar.`
+                }] : []),
+                ...(props.cateringOrders.length === 0 ? [{
+                  id: 'catering-missing',
+                  type: 'warning' as const,
+                  message: 'Catering para el primer día de rodaje sin confirmar.'
+                }] : [])
+              ]}
+              onAlertClick={props.onAlertClick}
+              todaySummary={{
+                shoot_day: `Rodaje / Día ${props.project.current_day_number || 1}`,
+                location: props.callSheets[0]?.locations?.name || "Sin locación asignada",
+                crewCall: props.callSheets[0]?.crew_call || "06:00 AM"
+              }}
+            />
+            
+            <PhaseProOverview 
+              isAlternateView={props.isAlternateView}
+              project={props.project}
+              tasks={props.tasks}
+              crew={props.crew}
+              locations={props.locations}
+              setIsAddExpenseModalOpen={props.setIsAddExpenseModalOpen}
+              setIsAddSupplierModalOpen={props.setIsAddSupplierModalOpen}
+              setIsAddLocationModalOpen={props.setIsAddLocationModalOpen}
+              setActiveSubTab={props.setActiveSubTab}
+              setIsAddCastingModalOpen={props.setIsAddCastingModalOpen}
+              setIsAddTaskModalOpen={props.setIsAddTaskModalOpen}
+              casting={props.casting}
+              activities={props.activities}
+            />
+          </div>
         )}
 
         {activeSubTab === 'crew' && (

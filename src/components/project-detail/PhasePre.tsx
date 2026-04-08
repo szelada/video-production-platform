@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { QuickQuote } from './QuickQuote';
+import { QuotationManager } from './QuotationManager';
 import { 
   Rocket, FileText, Clock, CheckSquare, MapPin, UserPlus, Plus, 
   ChevronRight, Check, Trash2, Sparkles, FolderOpen, ImageIcon, 
@@ -10,6 +11,7 @@ import {
   Loader2, X, MoreVertical, Users, Download, Calculator
 } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
+import { ControlCenter } from './ControlCenter';
 
 
 interface PhasePreProps {
@@ -51,6 +53,8 @@ interface PhasePreProps {
   project: any;
   budgetSummary: any[];
   onUpdate: () => void;
+  dynamicAlerts?: any[];
+  onAlertClick?: (alert: any) => void;
 }
 
 export const PhasePre: React.FC<PhasePreProps> = ({
@@ -91,7 +95,9 @@ export const PhasePre: React.FC<PhasePreProps> = ({
   onAddBreakdownItem,
   project,
   budgetSummary,
-  onUpdate
+  onUpdate,
+  dynamicAlerts = [],
+  onAlertClick
 }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedEditItem, setSelectedEditItem] = useState<any>(null);
@@ -184,41 +190,45 @@ export const PhasePre: React.FC<PhasePreProps> = ({
           exit={{ opacity: 0, y: -20 }}
           className="space-y-10"
         >
-          {/* Hero Summary Card */}
-          <div className="bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-500 rounded-[3rem] p-12 text-white shadow-2xl shadow-indigo-200/50 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl group-hover:scale-110 transition-transform duration-700" />
-            <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-10">
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <span className="px-4 py-1.5 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-black uppercase tracking-widest">Estado de Pre-pro</span>
-                  <span className="flex items-center gap-2 text-indigo-100 text-[10px] font-bold">
-                    <Clock size={12} /> Actualizado hace 2h
-                  </span>
-                </div>
-                <h1 className="text-5xl font-black tracking-tight leading-tight">Mesa de Control <br/> Pre-producción</h1>
-                <p className="text-indigo-100/80 text-lg max-w-xl font-medium">
-                  Gestiona el material base, desglosa escenas y prepara la biblia del proyecto antes de pasar al rodaje.
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-4">
-                <button 
-                  onClick={handleAIAnalysis}
-                  className="px-8 py-5 bg-white text-indigo-600 rounded-3xl font-black text-xs uppercase tracking-widest hover:bg-indigo-50 transition-all flex items-center gap-3 shadow-xl"
-                >
-                  <Rocket size={20} /> ANALIZAR CON IA
-                </button>
-                <button 
-                  onClick={() => setIsAddTaskModalOpen?.(true)}
-                  className="px-8 py-5 bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-3xl font-black text-xs uppercase tracking-widest hover:bg-white/10 transition-all flex items-center gap-3"
-                >
-                  <Plus size={20} /> NUEVA TAREA
-                </button>
-                <button className="px-8 py-5 bg-indigo-500/30 backdrop-blur-md border border-white/20 text-white rounded-3xl font-black text-xs uppercase tracking-widest hover:bg-white/10 transition-all flex items-center gap-3">
-                  <FileText size={20} /> GENERAR BIBLIA
-                </button>
-              </div>
-            </div>
-          </div>
+          {/* CONTROL CENTER: THE BRAIN */}
+          <ControlCenter 
+            project={project}
+            crew={crew}
+            nextAction={{
+              label: materials.filter(m => m.type === 'script').length === 0 
+                ? "Subir Guion para iniciar Desglose" 
+                : !analysisComplete 
+                ? "Ejecutar Análisis de IA sobre Guion"
+                : promotedCount < breakdownItems.length
+                ? "Promover elementos a Scouting"
+                : "Generar Biblia del Proyecto",
+              url: "#"
+            }}
+            alerts={[
+              ...dynamicAlerts,
+              ...(materials.filter(m => m.type === 'script').length === 0 ? [{
+                id: 'no-script',
+                type: 'error' as const,
+                message: 'No se ha cargado un guion literario principal.'
+              }] : []),
+              ...(analysisComplete && promotedCount < breakdownItems.length ? [{
+                id: 'pending-scouting',
+                type: 'warning' as const,
+                message: `${breakdownItems.length - promotedCount} elementos del desglose pendientes de promover.`
+              }] : []),
+              ...(!project.start_date ? [{
+                id: 'no-date',
+                type: 'info' as const,
+                message: 'Fecha de inicio de rodaje no definida en configuración.'
+              }] : [])
+            ]}
+            onAlertClick={onAlertClick}
+            todaySummary={{
+              shoot_day: `Pre-Pro / Día ${project.current_day_number || 1}`,
+              location: "Mesa de Trabajo / Oficina",
+              crewCall: "09:00 AM"
+            }}
+          />
 
           {/* Checklist & Stats Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -1052,6 +1062,10 @@ export const PhasePre: React.FC<PhasePreProps> = ({
           budgetSummary={budgetSummary}
           onUpdate={onUpdate}
         />
+      )}
+
+      {activeSubTab === 'cotizaciones' && (
+        <QuotationManager projectId={project.id} />
       )}
 
       {/* Edit Detail Modal */}
